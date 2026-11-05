@@ -1,0 +1,11 @@
+{
+  "name": "identity-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "One-off helper: register the agent on the ERC-8004 Identity Registry (Celo mainnet). Separate from the app, which stays zero-dependency.",
+  "dependencies": {
+    "@celo/attribution-tags": "latest",
+    "viem": "latest"
+  }
+}

@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ChainLens</title>
+<style>
+  :root{--bg:#f5f7f6;--card:#fff;--ink:#17211e;--mute:#62706b;--line:#dfe6e3;--accent:#2f7d6b;--accentsoft:#e5f1ed;--onaccent:#fff;--ok:#1a7f4b;--warn:#a85f00;--unk:#62706b;--bad:#b3261e;--note:#3a6fb0}
+  @media (prefers-color-scheme:dark){:root{--bg:#101614;--card:#18211e;--ink:#eaf1ee;--line:#27332f;--accent:#4aa58f;--accentsoft:#1c2e29;--onaccent:#07120f;--ok:#4cc38a;--warn:#e0a040;--unk:#9baba5;--bad:#f2b8b5;--note:#8bb6ea}}
+  @media (prefers-color-scheme:dark){:root{--mute:#9baba5}}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+  a{color:var(--accent)}
+  header.top{background:var(--card);border-bottom:1px solid var(--line)}
+  .bar{max-width:820px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:10px}
+  .logo{width:34px;height:34px;border-radius:10px;background:var(--accentsoft);color:var(--accent);display:grid;place-items:center;font-weight:800}
+  .pillogo{width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px}
+  .pill{display:inline-flex;align-items:center}
+  .brand{font-weight:700;font-size:18px} .pill{font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:var(--accentsoft);color:var(--mute);padding:3px 8px;border-radius:99px}
+  nav.tabs{max-width:820px;margin:0 auto;padding:0 16px 12px;display:flex;justify-content:center}
+  .seg{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:4px;flex-wrap:wrap;justify-content:center}
+  .seg button{background:transparent;color:var(--mute);border:0;padding:8px 10px;border-radius:99px;font:inherit;font-size:14px;cursor:pointer}
+  .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+  main{max-width:820px;margin:0 auto;padding:24px 16px 64px}
+  .hero{text-align:center;padding:12px 0 8px} .hero .ic{width:64px;height:64px;border-radius:20px;background:var(--accentsoft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px;font-size:28px;font-weight:800}
+  h1{font-size:clamp(26px,6vw,36px);line-height:1.15;margin:0 0 8px;letter-spacing:-.01em} .hero p{color:var(--mute);margin:0 auto 18px;max-width:560px}
+  .askcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .askcard label.q{display:block;font-weight:600;margin-bottom:8px}
+  textarea,input[type=text],select{width:100%;max-width:100%;min-width:0;padding:12px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font:inherit}
+  textarea{resize:vertical;min-height:64px} textarea:focus,input:focus,select:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  button{padding:11px 18px;border:0;border-radius:99px;background:var(--accent);color:var(--onaccent);font:inherit;cursor:pointer;font-weight:600}
+  button.small{padding:6px 12px;font-size:14px} button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap} .grow{flex:1 1 200px;min-width:0;word-break:break-word}
+  .spread{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:10px}
+  .price{color:var(--mute);font-size:14px;flex:1 1 220px}
+  .deepbox{border:1px dashed var(--line);border-radius:14px;padding:10px 12px;margin-top:12px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center}
+  .chip{background:var(--card);border:1px solid var(--line);color:var(--ink);font-weight:500;font-size:14px;padding:7px 12px}
+  .understood{margin:14px 2px 0;color:var(--mute);font-size:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}
+  .f{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap} .f:first-of-type{border-top:0}
+  .tag{flex:none;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid currentColor;height:fit-content}
+  .confirmed,.success,.recorded,.paid{color:var(--ok)} .likely,.pending,.decision{color:var(--warn)} .unknown,.free,.offer,.unavailable{color:var(--unk)} .deepcheck{color:var(--note)} .failed{color:var(--bad)} .noted,.reused{color:var(--note)}
+  .mute{color:var(--mute);font-size:14px} h2{font-size:16px;margin:0 0 4px} h3.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:18px 0 6px}
+  .layer{color:var(--mute);font-size:13px;margin:0 0 8px}
+  :root{--up:#1a9e5c;--down:#d6453d} @media (prefers-color-scheme:dark){:root{--up:#3fbf7f;--down:#ef6a62}}
+  .pricebox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 14px;position:relative;overflow:hidden}
+.clogo{width:20px;height:20px;border-radius:5px;align-self:center} .candles{position:relative;display:flex;gap:5px;margin-top:12px} .candles .guide{position:absolute;left:0;right:0;height:0;border-top:1px solid var(--line);opacity:.6} .candles .cd{flex:1;position:relative;height:100%;z-index:1} .candles .cd i{position:absolute;display:block} .candles .wick{left:calc(50% - .75px);width:1.5px} .candles .body{left:18%;right:18%;border-radius:2px} .candles .up i{background:var(--up)} .candles .down i{background:var(--down)} .candles .nowline{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--mute);opacity:.7;z-index:2;pointer-events:none}
+.pricebox>*{position:relative} .pricebox .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap} .pricebox .big{font-size:22px;font-weight:700} .pricebox .up{color:var(--up);font-weight:600} .pricebox .down{color:var(--down);font-weight:600} .bars{display:flex;gap:5px;margin-top:12px;position:relative} .bars .col{flex:1;position:relative;height:100%} .bars i{position:absolute;left:18%;right:18%;border-radius:2px;display:block} .bars i.up{background:var(--up)} .bars i.down{background:var(--down)} .bars i.flat{background:var(--unk)}
+  .tag.rf{color:var(--bad)} .tag.rv{color:#a15c00} .tag.lm{color:var(--ok)}
+  .badge{background:var(--warn);color:var(--card);border-radius:99px;padding:1px 8px;font-size:12px;font-weight:600}
+  .hash{font-family:ui-monospace,monospace;font-size:13px;word-break:break-all}
+  .banner{border:2px solid currentColor;border-radius:16px;padding:14px 16px;margin-top:16px;background:var(--card)}
+  .banner .t{font-size:20px;font-weight:700} .banner .s{color:var(--ink);margin-top:2px} .banner .r{margin-top:8px;font-size:15px;color:var(--ink)}
+  .notfound,.unclear{color:var(--unk)}
+  details{margin-top:6px} summary{cursor:pointer;color:var(--mute);font-size:13px}
+  ul.det{margin:6px 0 0 18px;padding:0;font-size:13px;color:var(--mute);font-family:ui-monospace,monospace;word-break:break-all}
+  .verdict{font-weight:600;margin:6px 0 2px}
+  .amt{font-variant-numeric:tabular-nums;font-weight:600}
+  #out,#pout2,#deepcard,#aout,#pout{scroll-margin-top:12px} .scrollpad{height:0}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50} .dlg{max-width:420px;width:100%;margin:0} .dlg input{width:100%;box-sizing:border-box;margin:8px 0} .dlg .row{display:flex;gap:8px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px} .tile b{display:block;font-size:24px;line-height:1.2} .tile span{color:var(--mute);font-size:13px}
+  .intro{color:var(--mute);margin:0 0 6px}
+  .fine{text-align:center;color:var(--mute);font-size:13px;margin:10px 0 0}
+  .stage{border-top:1px solid var(--line);padding:8px 0} .stage:first-of-type{border-top:0}
+  .stagehead{font-weight:700;margin-bottom:2px}
+  .answer{background:var(--accentsoft);border-radius:14px;padding:10px 12px;margin-top:10px}
+  .unread{font-weight:600}
+  ul.plain{margin:4px 0 4px 18px;padding:0}
+
+  .ti{display:none}
+  @media (max-width:640px){
+    body{font-size:15px;line-height:1.45;padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+    .bar{padding:8px 14px;gap:8px} .logo{width:28px;height:28px;border-radius:8px;font-size:14px} .brand{font-size:16px} .pill{font-size:10px;padding:2px 7px}
+    header.top{position:sticky;top:0;z-index:20}
+    nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;max-width:none;margin:0;padding:0;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+    .seg{display:grid;grid-template-columns:repeat(5,1fr);gap:0;background:transparent;border:0;border-radius:0;padding:0;width:100%}
+    .seg button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 7px;border-radius:0;font-size:11px;box-shadow:none;position:relative;background:transparent}
+    .seg button.on{background:transparent;box-shadow:none;color:var(--accent);font-weight:700}
+    .seg button.on::before{content:"";position:absolute;top:0;left:25%;right:25%;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
+    .ti{display:block}
+    #alertBadge{position:absolute;top:3px;left:calc(50% + 6px);margin:0!important;font-size:10px;min-width:16px;padding:0 4px;line-height:16px}
+    main{padding:14px 12px 24px}
+    .hero{padding:2px 0} .hero .ic{width:44px;height:44px;border-radius:14px;font-size:20px;margin-bottom:8px} h1{font-size:22px} .hero p{font-size:14px;margin-bottom:12px}
+    .askcard{padding:12px;border-radius:16px} textarea{min-height:52px;padding:10px;font-size:16px}
+    .card{padding:12px;border-radius:14px} h2{font-size:17px} .intro,.mute,.fine{font-size:13px}
+    .tiles{grid-template-columns:repeat(2,1fr);gap:8px} .tile{padding:10px} .tile b{font-size:20px}
+    .spread{flex-wrap:wrap;gap:8px}
+    .scrollpad{display:none}
+  }
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar"><div class="logo">C</div><div class="brand">ChainLens</div><span class="pill"><img src="/celo-logo.png" alt="" class="pillogo" onerror="this.remove()">Celo</span></div>
+  <nav class="tabs"><div class="seg" role="tablist">
+    <button id="tab-chat" class="on"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span class="tl">Chat</span></button><button id="tab-perms"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="tl">Approvals</span></button><button id="tab-wallets"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.500-6.500 10-6.500S22 12 22 12s-3.500 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="tl">Watchlist</span><span id="alertBadge" class="badge" hidden style="margin-left:6px"></span></button><button id="tab-activity"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tl">Activity</span></button><button id="tab-payments"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.500"/><path d="M7 9.500v5M17 9.500v5"/></svg><span class="tl">Payments</span></button>
+  </div></nav>
+</header>
+<main>
+  <section id="chat">
+    <div class="hero" id="hero">
+      <h1>Understand your on-chain activity</h1>
+      <p>Investigate transactions, understand wallet activity, and discover what deserves your attention.</p>
+    </div>
+    <form id="askf" class="askcard">
+      <label class="q" for="q">Ask about a transaction or wallet</label>
+      <textarea id="q" rows="2" placeholder="e.g. Why did this fail? 0x... (or paste a wallet address)" autocomplete="off" spellcheck="false"></textarea>
+      <div class="deepbox">
+        <label><input type="checkbox" id="deep"> <strong>Deep Investigation</strong> (optional)</label>
+        <div class="mute">Gets additional information from __PROVIDER__, through Buy.</div>
+        <div id="pickerSlot" style="margin-top:8px"></div>
+      </div>
+      <div class="spread"><span class="price">A Deep Investigation only starts when you ask for it. ChainLens pays for it.</span><button type="submit">Investigate</button></div>
+    </form>
+    <p class="fine">Read-only. No wallet connection. No keys.</p>
+    <div class="chips" id="chips"></div>
+    <p class="understood" id="understood" hidden></p>
+    <div id="out"></div>
+  </section>
+
+  <section id="perms" hidden>
+    <h1 style="font-size:22px;margin:4px 0 6px">Who can spend your tokens?</h1>
+    <p class="intro">Paste a Celo wallet address. ChainLens lists the contracts that were given approval to spend your tokens, in plain words. Read-only: nothing is connected and nothing can be moved or cancelled here.</p>
+    <form id="pf" class="row"><input type="text" id="pa" placeholder="0x... wallet address" autocomplete="off" spellcheck="false" style="flex:1 1 260px;width:auto"><button>Check</button></form>
+    <p class="price" style="margin:8px 0">The basic investigation is free. A Deep Investigation (Chainstack, through Buy) only starts when you ask for it. ChainLens pays for it.</p>
+    <div id="pout2"></div>
+  </section>
+
+  <section id="wallets" hidden>
+    <div id="priceBox"></div>
+    <div id="alertsBox"></div>
+    <p class="intro">Watch public Celo wallets. For each one: what it holds, what it did recently, and what stands out. Your list is kept in this browser only.</p>
+    <form id="wf" class="row"><input type="text" id="wa" placeholder="0x... wallet address" autocomplete="off" spellcheck="false" style="flex:1 1 260px;width:auto"><input type="text" id="wl" placeholder="Label (optional)" style="flex:0 1 160px;width:auto"><button>Add</button></form>
+    <div id="wout"></div>
+  </section>
+
+  <section id="activity" hidden>
+    <p class="intro">Your activities appear here</p>
+    <div id="aout"></div>
+  </section>
+
+  <section id="payments" hidden>
+    <p class="intro">Every Deep Investigation ChainLens has paid for through Buy, with the payment on Celo. Users pay nothing.</p>
+    <div id="pout"></div>
+  </section>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const link = (href, text) => { const a = document.createElement("a"); a.href = href; a.textContent = text; a.target = "_blank"; a.rel = "noopener noreferrer"; return a; };
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const shortAddr = (a) => (a && a.length > 14 ? a.slice(0, 6) + "..." + a.slice(-4) : a || "");
+const when = (iso) => { try { return new Date(iso).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch { return ""; } };
+const clock = (iso) => { try { return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); } catch { return ""; } };
+
+// A random ID for this browser, so the Payments page can count how many different people used the app.
+let sid = store.get("chainlens.sid", null);
+if (!sid) { sid = "u_" + Math.random().toString(36).slice(2, 12).padEnd(8, "x"); store.set("chainlens.sid", sid); }
+const ORDERER_KEY = "chainlens.orderer";
+const api = (path) => {
+  const ord = /^\/api\/(paid|permissions\/verify)/.test(path) ? store.get(ORDERER_KEY, "") : "";
+  return fetch(path + (path.includes("?") ? "&" : "?") + "sid=" + encodeURIComponent(sid) + (ord ? "&orderer=" + encodeURIComponent(ord) : "")).then((r) => r.json());
+};
+// A Deep Investigation needs the ordering wallet address, asked once and remembered in this browser.
+function getOrderer() {
+  const saved = store.get(ORDERER_KEY, "");
+  if (/^0x[0-9a-fA-F]{40}$/.test(saved)) return Promise.resolve(saved);
+  return new Promise((resolve) => {
+    const ov = el("div", "overlay"), card = el("div", "card dlg");
+    card.append(el("h2", null, "Order a Deep Investigation"));
+    card.append(el("p", "mute", "Enter your wallet address to order a Deep Investigation. ChainLens pays for it. The address is only recorded as who ordered it and is not verified."));
+    const inp = document.createElement("input"); inp.placeholder = "0x..."; inp.autocomplete = "off"; inp.spellcheck = false;
+    const msg = el("p", "mute"); const row = el("div", "row");
+    const ok = el("button", null, "Continue"), no = el("button", "ghost", "Cancel");
+    const done = (v) => { ov.remove(); resolve(v); };
+    ok.onclick = () => { const v = inp.value.trim(); if (!/^0x[0-9a-fA-F]{40}$/.test(v)) { msg.textContent = "That is not a valid wallet address."; return; } store.set(ORDERER_KEY, v); done(v); };
+    no.onclick = () => done(null);
+    inp.onkeydown = (e) => { if (e.key === "Enter") ok.onclick(); };
+    row.append(ok, no); card.append(inp, msg, row); ov.append(card); document.body.append(ov); inp.focus();
+  });
+}
+
+// ---- tabs
+const TABS = ["chat", "perms", "wallets", "activity", "payments"];
+const reduced = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const toView = (node) => { if (node) requestAnimationFrame(() => node.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "start" })); };
+function show(which, keepScroll) {
+  if (!keepScroll) window.scrollTo(0, 0);
+  for (const t of TABS) { $(t).hidden = t !== which; $("tab-" + t).className = t === which ? "on" : ""; }
+  if (which === "wallets") { startPrice(); renderAlerts(); renderWatch(); markAlertsRead(); }
+  if (which === "activity") renderActivity();
+  if (which === "payments") renderPayments();
+}
+for (const t of TABS) $("tab-" + t).onclick = () => show(t);
+
+// ---- reason picker (optional everywhere)
+const REASONS = [["", "Choose a reason (optional)"], ["failed", "Why did it fail?"], ["pending", "Why is it stuck?"], ["movements", "Check unexpected token movements"], ["verify", "Get more detailed verification"], ["other", "Other (add a note)"]];
+function reasonPicker(initial) {
+  const wrap = el("div", "row");
+  const sel = document.createElement("select"); sel.style.flex = "1 1 200px"; sel.style.width = "auto";
+  for (const [v, t] of REASONS) { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.append(o); }
+  sel.value = initial || "";
+  const note = document.createElement("input"); note.type = "text"; note.maxLength = 200; note.placeholder = "What do you want to know? (saved as a note only)"; note.style.flex = "1 1 220px"; note.style.width = "auto";
+  note.hidden = sel.value !== "other";
+  sel.onchange = () => { note.hidden = sel.value !== "other"; };
+  wrap.append(sel, note);
+  return { wrap, get: () => ({ purpose: sel.value, note: sel.value === "other" ? note.value : "" }) };
+}
+const topPicker = reasonPicker("");
+$("pickerSlot").append(topPicker.wrap);
+
+// ---- chat: ask bar
+const out = $("out");
+const understood = (msg) => { $("understood").textContent = msg || ""; $("understood").hidden = !msg; };
+const CHIPS = [["Who can spend my tokens?", "__perms__"], ["Explain a transaction", "Explain this transaction: "], ["Why did it fail?", "Why did this fail? "], ["Why is it stuck?", "Why is my transaction stuck? "], ["What is in a wallet?", "What is in this wallet? "]];
+for (const [label, prefix] of CHIPS) { const b = el("button", "chip", label); b.type = "button"; b.onclick = () => { if (prefix === "__perms__") { show("perms"); $("pa").focus(); return; } $("q").value = prefix; $("q").focus(); }; $("chips").append(b); }
+$("q").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("askf").requestSubmit(); } });
+$("askf").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const text = $("q").value.trim();
+  if (!text) { understood("Paste a transaction hash or a wallet address first."); return; }
+  out.replaceChildren(el("p", "mute", "Reading your question..."));
+  try {
+    const r = await api("/api/ask?q=" + encodeURIComponent(text));
+    understood(r.understood);
+    if (r.kind === "tx") { $("hero").hidden = true; investigate(r.hash, { deep: r.deep || $("deep").checked, purpose: r.purpose || undefined, keepMessage: true }); }
+    else if (r.kind === "permissions") { runPerms(r.address); out.replaceChildren(); }
+    else if (r.kind === "wallet") { $("hero").hidden = true; out.replaceChildren(buildWallet({ address: r.address, label: "" }, false).node); }
+    else out.replaceChildren();
+  } catch { out.replaceChildren(el("p", "mute", "Could not reach the app. Is it running?")); }
+});
+
+// Basic first, then the Deep Investigation fills in.
+async function investigate(hash, opts = {}) {
+  show("chat", true); $("hero").hidden = true; $("q").value = hash;
+  if (!opts.keepMessage) understood("Basic investigation");
+  const deep = opts.deep !== undefined ? opts.deep : $("deep").checked;
+  if (deep && !(await getOrderer())) return;
+  const pick = opts.purpose !== undefined ? { purpose: opts.purpose, note: opts.note || "" } : topPicker.get();
+  out.replaceChildren(el("p", "mute", "Reading the transaction...")); toView(out);
+  try {
+    const q = "hash=" + encodeURIComponent(hash) + (deep ? "&deep=1" : "") + (pick.purpose ? "&purpose=" + encodeURIComponent(pick.purpose) : "") + (pick.note ? "&note=" + encodeURIComponent(pick.note) : "");
+    const d = await api("/api/investigate?" + q);
+    renderInv(d); toView(out);
+    if (d.ok && d.paid && d.paid.pending) {
+      const p = await api("/api/paid?inv=" + encodeURIComponent(d.investigationId));
+      if (p.ok) { d.findings = d.findings.concat(p.findings); d.paid = p.paid; d.deep = p.deep; if (p.headline) d.headline = p.headline; if (p.autopsy) d.autopsy = p.autopsy; }
+      else { d.deep = { state: "unavailable", text: p.error }; d.paid = { used: false }; }
+      renderInv(d); toView($("deepcard") || out);
+    }
+  } catch { out.replaceChildren(el("p", "mute", "Could not reach the app. Is it running?")); }
+}
+
+function renderFinding(x, withSource) {
+  const row = el("div", "f"); row.append(el("span", "tag " + x.confidence, LVL(x.confidence)));
+  const body = el("div", "grow"); body.append(el("div", null, x.text));
+  if (x.why) body.append(el("div", "mute", "Why: " + x.why));
+  if (withSource && x.source) body.append(el("div", "mute", "Source: " + x.source));
+  if (x.technical && x.technical.length) {
+    const dt = document.createElement("details"); dt.append(el("summary", null, "Technical details"));
+    const ul = el("ul", "det"); for (const t of x.technical) ul.append(el("li", null, t)); dt.append(ul); body.append(dt);
+  }
+  row.append(body); return row;
+}
+
+function techList(items) {
+  const dt = document.createElement("details"); dt.append(el("summary", null, "Technical details"));
+  const ul = el("ul", "det"); for (const t of items) ul.append(el("li", null, t)); dt.append(ul); return dt;
+}
+function renderAnswer(box, r) {
+  box.replaceChildren();
+  if (!r.ok) { box.append(el("p", "mute", r.error || "Could not answer that.")); return; }
+  const a = el("div", "answer"); a.append(el("strong", null, r.question));
+  for (const l of r.lines) { const row = el("div", "f"); row.append(el("span", "tag " + l.level, LVL(l.level))); row.append(el("div", "grow", l.text)); a.append(row); }
+  if (r.paymentTxHash) { const lp = el("p", "mute"); lp.append(link("https://celoscan.io/tx/" + r.paymentTxHash, "Verify the payment on Celoscan")); a.append(lp); }
+  box.append(a);
+}
+function renderAutopsy(d) {
+  const a = d.autopsy; if (!a) return null;
+  const c = el("div", "card"); const head = el("div", "row");
+  head.append(el("h2", "grow", "Transaction Autopsy"), el("span", "tag " + (a.state === "success" ? "success" : a.state === "failed" ? "failed" : a.state === "pending" ? "pending" : "unknown"), a.outcome));
+  c.append(head, el("p", "layer", "What happened, step by step. Built only from evidence. Nothing is guessed."));
+  a.stages.forEach((s, i) => {
+    const st = el("div", "stage"); st.append(el("div", "stagehead", (i + 1) + ". " + s.title));
+    for (const l of s.lines) {
+      const r = el("div", "f"); r.append(el("span", "tag " + l.level, LVL(l.level)));
+      const b = el("div", "grow"); b.append(el("div", null, l.text));
+      if (l.source) if (l.source === "deep") b.append(el("div", "mute", "Source: __PROVIDER__, through Buy"));
+      if (l.technical && l.technical.length) b.append(techList(l.technical));
+      r.append(b); st.append(r);
+    }
+    c.append(st);
+  });
+  if (a.unknown.length) { c.append(el("h3", "sec", "What a Deep Investigation can check")); const ul = el("ul", "plain"); for (const u of a.unknown) ul.append(el("li", null, u)); c.append(ul); }
+  c.append(el("h3", "sec", "Where this comes from"));
+  for (const e of a.evidence) { const p = el("p", "mute", e.label + ": " + e.detail + " "); if (e.paymentTxHash) p.append(link("https://celoscan.io/tx/" + e.paymentTxHash, "Verify the payment")); c.append(p); }
+  if (a.needsDeep) {
+    const btn = el("button", null, "Run Deep Investigation to fill this in"); btn.style.marginTop = "6px";
+    btn.onclick = () => investigate(d.hash, { deep: true, purpose: a.state === "pending" ? "pending" : "failed" }); c.append(btn);
+    c.append(el("p", "mute", "ChainLens pays for it."));
+  }
+  if (d.followUps && d.investigationId) {
+    c.append(el("h3", "sec", "Ask a follow-up"));
+    const chips = el("div", "chips"); chips.style.justifyContent = "flex-start"; const box = el("div");
+    for (const f of d.followUps) {
+      const b = el("button", "chip", f.label); b.type = "button";
+      b.onclick = async () => { box.replaceChildren(el("p", "mute", "Looking at the evidence...")); try { renderAnswer(box, await api("/api/followup?inv=" + encodeURIComponent(d.investigationId) + "&q=" + f.key)); } catch { box.replaceChildren(el("p", "mute", "Could not reach the app.")); } };
+      chips.append(b);
+    }
+    c.append(chips, box);
+  }
+  return c;
+}
+
+function renderInv(d) {
+  out.replaceChildren();
+  if (!d.ok) { const c = el("div", "card"); c.append(el("p", null, d.error)); out.append(c); return; }
+
+  if (d.headline) {
+    const h = d.headline, b = el("div", "banner " + h.state);
+    b.append(el("div", "t", h.title)); b.append(el("div", "s", h.sentence));
+    if (h.reason) { const r = el("div", "r"); r.append(el("span", "tag " + h.reason.level, LVL(h.reason.level))); r.append(document.createTextNode(" " + h.reason.text)); b.append(r); }
+    out.append(b);
+  }
+  if (d.hash) { const lp = el("p", "mute"); lp.append(link("https://celoscan.io/tx/" + d.hash, "View this transaction on Celoscan")); out.append(lp); }
+
+  const au = renderAutopsy(d); if (au) out.append(au);
+
+  // One explanation only: the Autopsy carries everything. The plain list is used only when there is no Autopsy
+  // (for example a hash the explorer does not know).
+  if (!au) {
+    const basic = d.findings.filter((x) => (x.layer || "basic") === "basic");
+    const c = el("div", "card"); c.append(el("h2", null, "What happened")); c.append(el("p", "layer", "Basic investigation"));
+    for (const x of basic) c.append(renderFinding(x, false));
+    for (const n of d.notes || []) c.append(el("p", "mute", n));
+    out.append(c);
+  } else if ((d.notes || []).length) {
+    const nc = el("div"); for (const n of d.notes) nc.append(el("p", "mute", n)); out.append(nc);
+  }
+
+  const dp = d.deep || {};
+  const dc = el("div", "card"); dc.id = "deepcard";
+  if (dp.state === "offer") {
+    dc.append(el("h2", null, "Deep Investigation"));
+    if (dp.recommended) { const rec = el("p", null, "The basic investigation was not enough: " + dp.recommended + ". A Deep Investigation may find out more. It is your choice."); rec.style.fontWeight = "600"; dc.append(rec); }
+    dc.append(el("p", "layer", "Gets additional information from __PROVIDER__, through Buy. ChainLens pays for it. It starts only when you press the button."));
+    if (dp.adds && dp.adds.length) { if (dp.adds.length === 1) dc.append(el("p", "mute", "It would " + dp.adds[0].charAt(0).toLowerCase() + dp.adds[0].slice(1))); else { dc.append(el("p", "mute", "For this transaction it would:")); const ul = el("ul", "mute"); for (const a of dp.adds) ul.append(el("li", null, a)); dc.append(ul); } }
+    const picker = reasonPicker(topPicker.get().purpose);
+    const run = el("button", null, "Run Deep Investigation");
+    run.onclick = () => { const g = picker.get(); investigate(d.hash, { deep: true, purpose: g.purpose, note: g.note, keepMessage: false }); };
+    const row = el("div", "row"); row.style.marginTop = "8px"; row.append(picker.wrap, run); dc.append(row);
+    dc.append(el("p", "mute", "Choosing a reason is optional. It only focuses the check."));
+    out.append(dc);
+  } else if (dp.state === "running") {
+    dc.append(el("h2", null, "Deep Investigation in progress"));
+    dc.append(el("p", "mute", (dp.why ? dp.why + " " : "") + "ChainLens is paying __PROVIDER__, through Buy, for additional information. This can take up to a minute."));
+    out.append(dc);
+  } else if (dp.state === "done") {
+    dc.append(el("h2", null, "What the Deep Investigation added"));
+    dc.append(el("p", "layer", "Additional information from __PROVIDER__, through Buy. ChainLens paid for it." + (dp.reused ? " (Previously paid. No new charge.)" : "")));
+    if (dp.why) dc.append(el("p", "mute", dp.why));
+    if (dp.verdict) dc.append(el("p", "verdict", dp.verdict.line));
+    if (dp.completeness) dc.append(el("p", "mute", dp.completeness.text));
+    const deepF = d.findings.filter((x) => x.layer === "deep");
+    if (!au) { for (const x of deepF) dc.append(renderFinding(x, true)); }
+    else {
+      const groups = [["agree", "Confirmed what the basic investigation said"], ["differ", "Disagreed with the basic investigation"], ["new", "New information"], ["missing", "Could not be retrieved"]];
+      const seen = new Set();
+      for (const [k, title] of groups) {
+        const xs = deepF.filter((x) => (groups.some((g) => g[0] === x.kind) ? x.kind : "new") === k);
+        if (!xs.length) continue;
+        dc.append(el("h3", "sec", title));
+        for (const x of xs) { const r = el("div", "f"); r.append(el("span", "tag " + x.confidence, LVL(x.confidence))); r.append(el("div", "grow", x.text)); dc.append(r); if (x.technical && x.technical.length) dc.append(techList(x.technical)); }
+      }
+    }
+    const calls = (d.paid && d.paid.perCall) || [];
+    if (calls.length) {
+      const LBL = { eth_getTransactionByHash: "Transaction record", eth_getTransactionReceipt: "Receipt", debug_traceTransaction: "Step-by-step trace of the call", eth_call: "Balance or allowance check", eth_getTransactionCount: "Wallet transaction count", eth_gasPrice: "Current gas price", eth_blockNumber: "Latest block" };
+      dc.append(el("h3", "sec", "What was checked"));
+      const ul = el("ul", "plain");
+      for (const c2 of calls) ul.append(el("li", null, (LBL[c2.method] || c2.method) + ": " + (c2.ok ? "returned data" : "no usable answer" + (c2.error ? " (" + c2.error + ")" : ""))));
+      dc.append(ul);
+    }
+    out.append(dc);
+  } else if (dp.state === "unavailable") {
+    dc.append(el("h2", null, "Deep Investigation"));
+    dc.append(el("p", "mute", "It could not be completed: " + (dp.text || "no reason given") + " The basic investigation above still stands."));
+    out.append(dc);
+  }
+
+  const pd = d.paid || {};
+  if (pd.used) {
+    const L = pd.ledger || {};
+    const payHash = pd.paymentTxHash || L.paymentTxHash;
+    const v = el("details", "card"); v.append(el("summary", null, "Verification details"));
+    v.append(el("p", pd.reused ? "verdict" : "mute", pd.reused ? "Previously paid. No new charge." : "Paid by ChainLens: " + (L.amount || "") + " " + (L.currency || "")));
+    const rows = [
+      ["This investigation", d.investigationId],
+      ["Original payment was made in", pd.reused && L.investigationId && L.investigationId !== d.investigationId ? L.investigationId : null],
+      ["Reason", pd.purposeLabel || null], ["Provider", L.provider], ["Route", L.route],
+      ["Checks requested", (L.requested || []).map((r) => r.method).join(", ")],
+      [pd.reused ? "Paid earlier" : "Amount paid", L.amount ? L.amount + " " + L.currency : null],
+      ["Payment transaction", payHash], ["Result digest (sha-256)", L.resultDigest], ["Status", L.status],
+    ];
+    for (const [k, val] of rows) if (val) { const r = el("div", "f"); r.append(el("span", "mute", k)); r.append(el("span", "grow hash", val)); v.append(r); }
+    if (payHash) {
+      const lp = el("p", "mute"); lp.append(link("https://celoscan.io/tx/" + payHash, "Verify the payment on Celoscan"));
+      lp.append(document.createTextNode(". The link shows the payment of " + (L.amount || "") + " " + (L.currency || "") + " to Buy's gateway on Celo. It does not by itself prove which provider answered; the result digest above records what came back."));
+      v.append(lp);
+    }
+    out.append(v);
+  } else if (d.investigationId) {
+    out.append(el("p", "mute", "Investigation ID: " + d.investigationId));
+  }
+}
+
+// ---- wallets: holdings, recent activity, wallet intelligence
+let watch = store.get("chainlens.watch", []);   // [{address,label,lastSeen}]
+const CHECK_TEXT = {
+  confirmed: "Confirmed by the chain",
+  differs: "The explorer and the chain show different numbers. The balance may have changed between the two checks.",
+  "chain-only": "From a Celo node only",
+  "explorer-only": "From the explorer only, not cross-checked",
+};
+function renderHoldings(box, h) {
+  box.replaceChildren(el("h3", "sec", "Holdings"));
+  if (!h.ok) { box.append(el("p", "mute", "Could not read balances right now. This does not mean the wallet is empty. (" + h.error + ")")); return; }
+  const line = (x, sym) => {
+    const r = el("div", "f"); r.append(el("span", "amt", x.amount + " " + sym));
+    const b = el("div", "mute grow");
+    if (x.check === "differs") {
+      b.textContent = "The explorer shows " + x.explorerAmount + " and a Celo node shows " + x.chainAmount + ". The figure shown is the node's reading of the chain. The two can differ if the explorer is behind or the balance changed between the checks.";
+      if (x.explorerHadToken === false) b.textContent += " The explorer did not list this token for the wallet.";
+    } else b.textContent = (CHECK_TEXT[x.check] || "") + (x.explorerNotListed ? ". The explorer did not list this token for the wallet" : "");
+    r.append(b); box.append(r);
+  };
+  if (h.native && h.native.amount !== null) line(h.native, "CELO");
+  for (const t of h.tokens) line(t, t.symbol);
+  if (h.empty) box.append(el("p", "mute", "No CELO or tokens found for this address."));
+  else if (!h.tokens.length) box.append(el("p", "mute", "No well-known stablecoin balance found."));
+  if (h.other && h.other.length) {
+    const d = document.createElement("details"); d.append(el("summary", null, "Other tokens (unverified): " + h.other.length));
+    const ul = el("ul", "det"); for (const t of h.other) ul.append(el("li", null, t.amount + " " + t.symbol + (t.name ? " (" + t.name + ")" : ""))); d.append(ul);
+    d.append(el("p", "mute", "Anyone can create a token with any name. These were not checked, and no value is shown."));
+    box.append(d);
+  }
+  for (const n of h.notes || []) box.append(el("p", "mute", n));
+  const src = [h.sources && h.sources.explorer ? "the Celo explorer" : null, h.sources && h.sources.chain ? "a public Celo node" : null].filter(Boolean).join(" and ");
+  box.append(el("p", "mute", "Checked at " + clock(h.checkedAt) + (src ? " from " + src : "") + ". No dollar values are shown."));
+}
+
+function renderIntel(box, intel, change, changes) {
+  box.replaceChildren(el("h3", "sec", "Wallet intelligence"));
+  if (change) box.append(el("p", null, change));
+  if (changes && changes.length) {
+    box.append(el("p", "mute", "What changed since you last looked:"));
+    for (const c of changes) {
+      const r = el("div", "f"); r.append(el("span", "tag " + c.status, c.status));
+      const b = el("div", "grow"); b.append(el("div", "unread", c.summary)); if (c.when) b.append(el("div", "mute", c.when));
+      const ul = el("ul", "plain"); for (const t of c.lines) ul.append(el("li", null, t)); b.append(ul);
+      const eb = el("button", "small ghost", "Explain"); eb.onclick = () => investigate(c.hash); b.append(eb);
+      r.append(b); box.append(r);
+    }
+  }
+  if (!intel) return;
+  if (intel.signals.length) {
+    box.append(el("p", "mute", "Worth a look. These are counted from the " + intel.window.events + " recent events checked. They describe patterns; they do not say why they happened."));
+    for (const s of intel.signals) {
+      const r = el("div", "f"); r.append(el("span", "tag noted", "worth a look"));
+      const b = el("div", "grow"); b.append(el("div", null, s.text));
+      if (s.technical && s.technical.length) { const dt = document.createElement("details"); dt.append(el("summary", null, "Technical details")); const ul = el("ul", "det"); for (const t of s.technical) ul.append(el("li", null, t)); dt.append(ul); b.append(dt); }
+      if (s.suggest) { const btn = el("button", "small ghost", s.suggest.label); btn.style.marginTop = "6px"; btn.onclick = () => investigate(s.suggest.hash, s.suggest.purpose ? { deep: true, purpose: s.suggest.purpose } : { deep: false, purpose: "" }); b.append(btn); }
+      r.append(b); box.append(r);
+    }
+  } else if (intel.statement) box.append(el("p", "mute", intel.statement));
+  if (intel.partial) box.append(el("p", "mute", intel.partial));
+}
+
+function buildWallet(w, watched) {
+  const card = el("div", "card"); const head = el("div", "row");
+  head.append(el("strong", "grow", (w.label ? w.label + " " : "") + w.address.slice(0, 8) + "..." + w.address.slice(-6)));
+  const badge = el("span", "badge", ""); badge.hidden = true; head.append(badge);
+  const rb = el("button", "small ghost", "Refresh"); head.append(rb);
+  let xb = null;
+  if (watched) {
+    const lab = el("label", "mute"); const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = w.alerts !== false;
+    cb.onchange = () => { w.alerts = cb.checked; store.set("chainlens.watch", watch); };
+    lab.append(cb, document.createTextNode(" Alerts")); head.append(lab);
+    xb = el("button", "small ghost", "Remove"); head.append(xb);
+  }
+  else { xb = el("button", "small", "Watch this wallet"); xb.onclick = () => { if (!watch.some((x) => x.address.toLowerCase() === w.address.toLowerCase())) watch.push({ address: w.address, label: "", lastSeen: null }); store.set("chainlens.watch", watch); xb.textContent = "Added to Wallets"; xb.disabled = true; }; head.append(xb); }
+  card.append(head);
+  const hold = el("div"), intelBox = el("div"), list = el("div");
+  list.append(el("h3", "sec", "Recent activity"));
+  card.append(hold, intelBox, list);
+
+  const load = async () => {
+    badge.hidden = true;
+    hold.replaceChildren(el("h3", "sec", "Holdings"), el("p", "mute", "Loading..."));
+    intelBox.replaceChildren(); list.replaceChildren(el("h3", "sec", "Recent activity"), el("p", "mute", "Loading..."));
+    api("/api/holdings?address=" + encodeURIComponent(w.address)).then((h) => renderHoldings(hold, h)).catch(() => hold.replaceChildren(el("h3", "sec", "Holdings"), el("p", "mute", "Could not read balances right now.")));
+    try {
+      const d = await api("/api/wallet?address=" + encodeURIComponent(w.address) + (watched && w.lastSeen ? "&since=" + encodeURIComponent(w.lastSeen) : "") + (watched ? "" : "&look=1"));
+      list.replaceChildren(el("h3", "sec", "Recent activity"));
+      if (!d.ok) { list.append(el("p", "mute", "Could not load activity for this address right now. This does not mean it has none. (" + d.error + ")")); return; }
+      if (d.state === "none") list.append(el("p", "mute", "The explorer shows no transactions or token transfers for this address."));
+      if (d.state === "incomplete") list.append(el("p", "mute", "Some activity could not be loaded, so we cannot say whether this address has any. This does not mean it has none."));
+      const hadSeen = !!w.lastSeen;
+      const seenIdx = hadSeen ? d.items.findIndex((i) => i.hash === w.lastSeen) : -1;
+      const fresh = hadSeen ? (seenIdx === -1 ? d.items.length : seenIdx) : 0;
+      if (fresh > 0) { badge.textContent = fresh + " new"; badge.hidden = false; }
+      d.items.forEach((it) => {
+        const r = el("div", "f"); r.append(el("span", "tag " + it.status, it.status));
+        const b = el("div", "grow"); b.append(el("div", null, it.summary)); b.append(el("div", "mute", it.when || ""));
+        r.append(b); const eb = el("button", "small ghost", "Explain"); eb.onclick = () => investigate(it.hash); r.append(eb); list.append(r);
+      });
+      const last = d.items.find((i) => i.when);
+      let change = null;
+      if (d.items.length) {
+        if (!watched) change = null;
+        else if (!hadSeen) change = "First time viewing this wallet.";
+        else if (fresh === 0) change = "Nothing new since you last viewed this wallet. Last activity: " + (last ? last.when : "unknown") + ".";
+        else change = fresh + (fresh === 1 ? " new item" : " new items") + " since you last viewed this wallet: " + d.items.slice(0, Math.min(fresh, 3)).map((i) => i.summary).join("; ") + (fresh > 3 ? "; and more." : ".");
+      }
+      renderIntel(intelBox, d.intel, change, d.changes);
+      for (const n of d.notes || []) list.append(el("p", "mute", n));
+      list.append(el("p", "mute", "Checked at " + clock(d.checkedAt) + " from " + (d.source || "the Celo explorer") + "."));
+      if (watched && d.items[0]) { w.lastSeen = d.items[0].hash; store.set("chainlens.watch", watch); }
+    } catch { list.replaceChildren(el("h3", "sec", "Recent activity"), el("p", "mute", "Could not load activity for this address right now. This does not mean it has none.")); }
+  };
+  rb.onclick = load;
+  if (watched) xb.onclick = () => { watch = watch.filter((x) => x !== w); store.set("chainlens.watch", watch); renderWatch(); };
+  load();
+  return { node: card, load };
+}
+
+const wout = $("wout");
+$("wf").addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  const a = $("wa").value.trim();
+  if (!/^0x[0-9a-fA-F]{40}$/.test(a)) { alert("That does not look like a wallet address (0x + 40 characters)."); return; }
+  if (!watch.some((w) => w.address.toLowerCase() === a.toLowerCase())) watch.push({ address: a, label: $("wl").value.trim(), lastSeen: null });
+  store.set("chainlens.watch", watch); $("wa").value = ""; $("wl").value = ""; renderWatch(); restartPolling();
+});
+// ---- permission check
+const LEVEL = { "review-first": ["rf", "review first"], review: ["rv", "review"], limited: ["lm", "limited"] };
+async function runPerms(address) {
+  show("perms", true); $("pa").value = address;
+  const box = $("pout2"); box.replaceChildren(el("p", "mute", "Reading this wallet's approval history. This can take a few seconds...")); toView(box);
+  let d; try { d = await api("/api/permissions?address=" + encodeURIComponent(address)); } catch { box.replaceChildren(el("p", "mute", "Could not reach the app. Is it running?")); return; }
+  box.replaceChildren();
+  if (!d.ok) { box.append(el("p", "mute", d.error || "Something went wrong.")); return; }
+  const head = el("div", "card");
+  const rf = d.permissions.filter((p) => p.level === "review-first").length;
+  head.append(el("h2", null, d.empty ? "No active approvals found" : d.permissions.length + (d.permissions.length === 1 ? " active approval" : " active approvals")));
+  if (rf) head.append(el("p", null, rf + (rf === 1 ? " is" : " are") + " unlimited and not clearly identified. Worth a look first."));
+  if (d.cancelledCount) head.append(el("p", "mute", d.cancelledCount + " earlier approval" + (d.cancelledCount === 1 ? " was" : "s were") + " already cancelled."));
+  head.append(el("p", "mute", "Checked " + clock(d.checkedAt) + " against a public Celo node. Found through " + (d.source === "sqd" ? "the wallet's full approval history" : "the Celo explorer") + "."));
+  box.append(head);
+  const rows = {};
+  if (d.permissions.length) {
+    const c = el("div", "card");
+    for (const p of d.permissions) {
+      const r = el("div", "f"); const [cls, label] = LEVEL[p.level];
+      r.append(el("span", "tag " + cls, label));
+      const b = el("div", "grow"); b.append(el("div", null, p.text));
+      const meta = el("div", "mute", (p.grantedAt ? "Given " + when(p.grantedAt) + " · " : "") + "token " + shortAddr(p.token) + " · ");
+      if (p.grantTx) { meta.append(link("https://celoscan.io/tx/" + p.grantTx, "approval")); meta.append(document.createTextNode(" · ")); }
+      meta.append(link("https://celoscan.io/address/" + p.spender, "spender"));
+      b.append(meta);
+      const ind = el("div", "mute"); ind.hidden = true; b.append(ind); rows[p.token.toLowerCase() + "|" + p.spender.toLowerCase()] = ind;
+      r.append(b); c.append(r);
+    }
+    box.append(c);
+    const pay = el("div", "card"); pay.append(el("h2", null, "Deep Investigation"));
+    pay.append(el("p", "mute", "The list above comes from the explorer and the public Celo node. A Deep Investigation asks a separate node (__PROVIDER__, paid by ChainLens through Buy) what is still active right now, and how much of your tokens each approval could actually move. ChainLens pays for it. It starts only when you press the button."));
+    const btn = el("button", null, "Run Deep Investigation"); const res = el("div");
+    btn.onclick = async () => {
+      if (!(await getOrderer())) return;
+      btn.disabled = true; btn.textContent = "Checking..."; res.replaceChildren();
+      let v; try { v = await api("/api/permissions/verify?check=" + encodeURIComponent(d.checkId)); } catch { v = { ok: false, error: "Could not reach the app." }; }
+      btn.disabled = false; btn.textContent = "Run Deep Investigation";
+      if (!v.ok || !v.available) { res.replaceChildren(el("p", "mute", v.error || v.reason || "The check could not be completed.")); return; }
+      const P = v.permissions; toView(res);
+      res.append(el("p", null, P.agree + " of " + P.checked + " confirmed by an independent node." + (P.differ ? " " + P.differ + " did not match the list above, so treat those with care." : "") + (P.noAnswer ? " " + P.noAnswer + " got no answer." : "") + (v.reused ? " Already checked today. No new charge." : "")));
+      if (v.paymentTxHash) { const m = el("p", "mute", "Payment: "); m.append(link("https://celoscan.io/tx/" + v.paymentTxHash, "view on Celoscan")); res.append(m); }
+      const sum = el("ul", "plain"); const byKey = {}; for (const p of d.permissions) byKey[p.token.toLowerCase() + "|" + p.spender.toLowerCase()] = p;
+      for (const x of P.checks) { const p = byKey[x.token.toLowerCase() + "|" + x.spender.toLowerCase()]; const who = p ? p.text.split(" can ")[0] : shortAddr(x.spender); const li = el("li", null, who + ": " + (x.state === "no-answer" ? "no answer from the independent node." : x.active === false ? "no longer active." : "still active" + (x.state === "differ" ? ", but the amount differs from the list above" : "") + (x.atRiskText ? ". Most it can take now: " + x.atRiskText + "." : "."))); sum.append(li); }
+      res.append(sum);
+      for (const x of P.checks) { const ind = rows[x.token.toLowerCase() + "|" + x.spender.toLowerCase()]; if (!ind) continue; ind.hidden = false; const risk = x.atRiskText ? (x.active === false ? " Most it can take now: " + x.atRiskText + "." : " Most it can take now: " + x.atRiskText + ".") : "";
+        ind.textContent = x.state === "agree" ? "Confirmed by an independent node. Still active." + risk : x.state === "differ" ? (x.active === false ? "No longer active. The independent node shows this approval is gone." : "Does NOT match the list above. The list said " + x.freeRaw + ", the independent node said " + x.paidRaw + ".") + risk : "The independent node gave no answer for this one."; }
+    };
+    pay.append(btn, res); box.append(pay);
+  }
+  const n = el("div", "card"); n.append(el("h2", null, "What this cannot show"));
+  const ul = el("ul", "plain mute"); for (const t of [...d.notes, ...d.limits]) ul.append(el("li", null, t)); n.append(ul); box.append(n);
+}
+$("pf").addEventListener("submit", (e) => { e.preventDefault(); const a = $("pa").value.trim(); if (a) runPerms(a); });
+
+let priceTimer = null;
+async function loadPrice() {
+  const box = $("priceBox"); if (!box) return;
+  let d; try { d = await api("/api/price"); } catch { d = { ok: false }; }
+  box.replaceChildren();
+  const c = el("div", "pricebox");
+  if (!d.ok) { c.append(el("p", "mute", "CELO price is not available right now.")); box.append(c); return; }
+  const top = el("div", "top"); const lg = document.createElement("img"); lg.src = "/celo-logo.png"; lg.alt = ""; lg.className = "clogo"; lg.onerror = () => lg.remove();
+  top.append(lg, el("span", "mute", "CELO"), el("span", "big", d.priceText));
+  if (d.changePct != null) top.append(el("span", d.direction === "down" ? "down" : d.direction === "up" ? "up" : "mute", (d.direction === "down" ? "▼ " : d.direction === "up" ? "▲ " : "") + (d.changePct > 0 ? "+" : "") + d.changePct + "% in 24 hours"));
+  c.append(top);
+  const cs = (d.candles && d.candles.length) ? d.candles : (d.days || []).map((x, i) => { const o = i === 0 ? (d.firstOpen ?? x.close) : d.days[i - 1].close; return { date: x.date, open: o, close: x.close, high: Math.max(o, x.close), low: Math.min(o, x.close), bodyOnly: true }; });
+  if (cs.length) {
+    const H = 96, hi = Math.max(...cs.map((x) => x.high), d.price), lo = Math.min(...cs.map((x) => x.low), d.price), span = (hi - lo) || 1, y = (v) => ((hi - v) / span * H);
+    const chart = el("div", "candles"); chart.style.height = H + "px";
+    for (const f of [0.25, 0.5, 0.75]) { const g = el("i", "guide"); g.style.top = (f * H) + "px"; chart.append(g); }
+    cs.forEach((x) => {
+      const up = x.close >= x.open, col = el("div", "cd " + (up ? "up" : "down"));
+      col.title = x.date + "\nOpen $" + x.open + "\nHigh $" + x.high + "\nLow $" + x.low + "\nClose $" + x.close;
+      if (!x.bodyOnly) { const w = el("i", "wick"); w.style.top = y(x.high) + "px"; w.style.height = Math.max(1, y(x.low) - y(x.high)) + "px"; col.append(w); }
+      const bd = el("i", "body"); bd.style.top = y(Math.max(x.open, x.close)) + "px"; bd.style.height = Math.max(2, Math.abs(y(x.open) - y(x.close))) + "px"; col.append(bd);
+      chart.append(col);
+    });
+    const now = el("i", "nowline"); now.style.top = y(d.price) + "px"; chart.append(now);
+    c.append(chart);
+  }
+  box.append(c);
+}
+function startPrice() { loadPrice(); if (!priceTimer) priceTimer = setInterval(loadPrice, 300000); }
+
+function renderWatch() {
+  wout.replaceChildren();
+  if (!watch.length) { wout.append(el("p", "mute", "No wallets yet. Add a public Celo address above.")); return; }
+  for (const w of watch) wout.append(buildWallet(w, true).node);
+}
+
+// ---- activity feed
+const LVL = (x) => (x === "deepcheck" ? "Deep Investigation can check" : x);
+const TYPE_LABEL = { free: "Basic investigation", lookup: "Basic investigation", offer: "Deep Investigation offered", decision: "Deep Investigation started", paid: "Deep Investigation", reused: "Deep Investigation, no new charge", unavailable: "Deep Investigation unavailable" };
+async function renderActivity() {
+  const box = $("aout"); box.replaceChildren(el("p", "mute", "Loading..."));
+  try {
+    const d = await api("/api/feed");
+    box.replaceChildren();
+    if (!d.events.length) { box.append(el("p", "mute", "Nothing yet. Your activities appear here.")); return; }
+    const c = el("div", "card");
+    for (const e of d.events) {
+      const r = el("div", "f"); r.append(el("span", "tag " + e.type, TYPE_LABEL[e.type] || e.type));
+      const b = el("div", "grow"); b.append(el("div", null, e.text));
+      const meta = el("div", "mute", when(e.at));
+      if (e.paymentTxHash) { meta.append(document.createTextNode(" · ")); meta.append(link("https://celoscan.io/tx/" + e.paymentTxHash, "payment on Celoscan")); }
+      b.append(meta); r.append(b); c.append(r);
+    }
+    box.append(c);
+  } catch { box.replaceChildren(el("p", "mute", "Could not load the activity feed.")); }
+}
+
+// ---- payments (whole-ChainLens proof: successful Deep Investigations only)
+async function renderPayments() {
+  const box = $("pout"); box.replaceChildren(el("p", "mute", "Loading..."));
+  try {
+    const d = await api("/api/payments");
+    box.replaceChildren();
+    const T = d.totals;
+    const tiles = el("div", "tiles");
+    for (const [n, label] of [[T.ordered, "Deep Investigations ordered"], [T.usersWhoOrdered, "users who ordered"], [T.totalPaid + " " + T.currency, "paid by ChainLens"]]) {
+      const t = el("div", "tile"); t.append(el("b", null, String(n))); t.append(el("span", null, label)); tiles.append(t);
+    }
+    box.append(tiles);
+    const c = el("div", "card"); c.append(el("h2", null, "People who used ChainLens"));
+    c.append(el("p", "mute", "Ordered by is the wallet address the person entered. ChainLens pays for every Deep Investigation through Buy, on Celo."));
+    if (!d.calls.length) c.append(el("p", "mute", "No Deep Investigations yet."));
+    for (const x of d.calls) {
+      const r = el("div", "f"); r.append(el("span", "tag paid", "payment"));
+      const b = el("div", "grow");
+      const o = el("div", null, "Ordered by ");
+      if (x.orderer) { const l = link("https://celoscan.io/address/" + x.orderer, shortAddr(x.orderer)); l.title = x.orderer; o.append(l); } else o.append(document.createTextNode("not recorded"));
+      b.append(o);
+      const subj = x.tx || x.address;
+      const inv = el("div", null, "Investigated: ");
+      if (subj) { const l = link("https://celoscan.io/" + (x.tx ? "tx/" : "address/") + subj, shortAddr(subj)); l.title = subj; inv.append(l); inv.append(document.createTextNode(x.tx ? " (transaction)" : " (wallet approvals)")); }
+      b.append(inv);
+      const meta = el("div", "mute", "paid " + (x.amount || "?") + " " + (x.currency || "") + " · " + when(x.at) + " · ");
+      if (x.paymentTxHash) meta.append(link("https://celoscan.io/tx/" + x.paymentTxHash, "payment on Celoscan")); else meta.append(document.createTextNode("no payment hash recorded"));
+      b.append(meta);
+      if (x.contributed && x.contributed.length) { const dt = document.createElement("details"); dt.append(el("summary", null, "What it added")); const ul = el("ul", "det"); for (const t of x.contributed) ul.append(el("li", null, t)); dt.append(ul); b.append(dt); }
+      r.append(b); c.append(r);
+    }
+    box.append(c);
+  } catch { box.replaceChildren(el("p", "mute", "Could not load the payments page.")); }
+}
+
+// ---- alerts: free data only, while this page is open. They never start a Deep Investigation.
+const ALERT_KEY = "chainlens.alerts";
+let alertsList = store.get(ALERT_KEY, []);          // [{at,label,address,text,hash,kind,read}]
+let alertEvery = store.get("chainlens.alertEvery", 5);   // minutes; 0 = off
+let pollTimer = null;
+const unreadCount = () => alertsList.filter((a) => !a.read).length;
+function updateBadge() { const n = unreadCount(), b = $("alertBadge"); b.textContent = n; b.hidden = n === 0; document.title = (n ? "(" + n + ") " : "") + "ChainLens"; }
+function markAlertsRead() { setTimeout(() => { alertsList.forEach((a) => (a.read = true)); store.set(ALERT_KEY, alertsList); updateBadge(); }, 4000); }
+function markAllReadNow() { alertsList.forEach((a) => (a.read = true)); store.set(ALERT_KEY, alertsList); updateBadge(); renderAlerts(); }
+function notify(title, body) { try { if ("Notification" in window && Notification.permission === "granted") { const n = new Notification(title, { body }); n.onclick = () => { try { window.focus(); show("wallets"); n.close(); } catch {} }; } } catch {} }
+function pushAlert(w, text, hash, kind) {
+  alertsList.unshift({ at: new Date().toISOString(), label: w.label || shortAddr(w.address), address: w.address, text, hash: hash || null, kind, read: false });
+  alertsList = alertsList.slice(0, 50); store.set(ALERT_KEY, alertsList); updateBadge(); renderAlerts();
+  notify((w.label || shortAddr(w.address)) + ": ChainLens", text);
+}
+async function pollWallet(w) {
+  if (w.alerts === false) return;
+  const d = await api("/api/wallet?address=" + encodeURIComponent(w.address));
+  if (!d.ok) return;
+  const items = d.items.filter((i) => i.hash);
+  const first = !w.alertSeen;                       // the first look only records a starting point, so there is no flood
+  const seen = new Set(w.alertSeen || []), before = w.alertStatus || {}, sigSeen = new Set(w.sigSeen || []);
+  if (!first) {
+    for (const it of items.slice().reverse()) {
+      const what = it.summary.replace(/^(Failed|Pending): /, "");
+      if (!seen.has(it.hash)) pushAlert(w, it.status === "failed" ? "A transaction failed: " + what : it.status === "pending" ? "A transaction is pending: " + what : "Activity: " + what, it.hash, it.status);
+      else if (before[it.hash] === "pending" && it.status !== "pending") pushAlert(w, "A pending transaction is now " + it.status + ": " + what, it.hash, it.status);
+    }
+    for (const sg of (d.intel && d.intel.signals) || []) { if (!sigSeen.has(sg.key + "|" + sg.text)) pushAlert(w, "Worth a look: " + sg.text, sg.suggest && sg.suggest.hash, "signal"); }
+  }
+  w.alertSeen = [...new Set([...items.map((i) => i.hash), ...seen])].slice(0, 80);
+  w.alertStatus = Object.fromEntries(items.map((i) => [i.hash, i.status]));
+  w.sigSeen = [...new Set([...(((d.intel && d.intel.signals) || []).map((sg) => sg.key + "|" + sg.text)), ...sigSeen])].slice(0, 80);
+  store.set("chainlens.watch", watch);
+}
+async function pollNow() { for (const w of watch.slice()) { try { await pollWallet(w); } catch {} } }
+function restartPolling() { clearInterval(pollTimer); pollTimer = null; if (!alertEvery) return; pollNow(); pollTimer = setInterval(pollNow, alertEvery * 60000); }
+
+function renderAlerts() {
+  const box = $("alertsBox"); box.replaceChildren();
+  const c = el("div", "card"); c.style.marginTop = "0";
+  const head = el("div", "row"); head.append(el("h2", "grow", "Alerts"));
+  const sel = document.createElement("select"); sel.style.width = "auto"; sel.style.flex = "0 0 auto";
+  for (const [v, t] of [[0, "Alerts off"], [2, "Check every 2 min"], [5, "Check every 5 min"], [10, "Check every 10 min"]]) { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.append(o); }
+  sel.value = String(alertEvery); sel.onchange = () => { alertEvery = Number(sel.value); store.set("chainlens.alertEvery", alertEvery); restartPolling(); };
+  head.append(sel); c.append(head);
+  c.append(el("p", "mute", "Alerts check your watched wallets with a basic investigation while this page is open, and tell you about new activity, failures, pending transactions and anything worth a look. They never start a Deep Investigation. You choose."));
+  if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+    const nb = el("button", "small ghost", "Turn on pop-up notifications"); nb.onclick = async () => { try { await Notification.requestPermission(); } catch {} renderAlerts(); }; c.append(nb);
+  } else if ("Notification" in window && Notification.permission === "denied") c.append(el("p", "mute", "Pop-up notifications are blocked in this browser. Alerts still appear here and in the tab title."));
+  if (!alertsList.length) c.append(el("p", "mute", watch.length ? "No alerts yet. The first check only records where each wallet stands now." : "Add a wallet below to start."));
+  for (const a of alertsList.slice(0, 10)) {
+    const r = el("div", "f"); r.append(el("span", "tag " + (a.kind === "signal" ? "noted" : a.kind === "failed" ? "failed" : a.kind === "pending" ? "pending" : a.read ? "unknown" : "success"), a.kind === "signal" ? "worth a look" : a.kind === "failed" ? "failed" : a.kind === "pending" ? "pending" : (a.read ? "earlier" : "new")));
+    const b = el("div", "grow"); b.append(el("div", a.read ? null : "unread", String(a.text).replace(/^Worth a look: /, "").replace("(a address)", "(an address)"))); b.append(el("div", "mute", a.label + " · " + when(a.at)));
+    if (a.hash) { const eb = el("button", "small ghost", "Explain"); eb.onclick = () => { a.read = true; store.set(ALERT_KEY, alertsList); updateBadge(); investigate(a.hash); }; b.append(eb); }
+    r.append(b); c.append(r);
+  }
+  if (unreadCount()) { const mb = el("button", "small ghost", "Mark all read (" + unreadCount() + ")"); mb.style.marginTop = "6px"; mb.style.marginRight = "6px"; mb.onclick = markAllReadNow; c.append(mb); }
+  if (alertsList.length) { const cb = el("button", "small ghost", "Clear alerts"); cb.style.marginTop = "6px"; cb.onclick = () => { alertsList = []; store.set(ALERT_KEY, alertsList); updateBadge(); renderAlerts(); }; c.append(cb); }
+  box.append(c);
+}
+renderAlerts(); updateBadge(); restartPolling();
+</script>
+</body>
+</html>

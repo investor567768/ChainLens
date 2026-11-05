@@ -1,0 +1,12 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "ChainLens",
+  "description": "Read-only assistant for Celo. Explains transactions and wallets in plain language, marks every statement as confirmed, likely or unknown, and pays an independent archive-data provider only when a deeper check is needed.",
+  "image": "",
+  "services": [
+    { "name": "web", "endpoint": "https://REPLACE-WITH-LIVE-DEMO-URL" }
+  ],
+  "x402Support": false,
+  "active": true,
+  "supportedTrust": ["reputation"]
+}
