@@ -6,13 +6,11 @@ Built for the Celo x Loops House "Agents on Open Rails" hackathon, track **Build
 
 ## Where ChainLens began
 
-When I started in crypto, I could stare at a blockchain explorer and understand nothing. Hashes, hex data, "status: fail" with no reason. Nobody explains what actually happened to your money.
+ChainLens began as a tool to help newbies understand the blockchain in plain language. When I started in crypto, I could stare at a blockchain without understanding anything.
 
-ChainLens began as a tool to help newcomers understand the blockchain in plain language. Paste a transaction and it tells you what happened, what is confirmed, what is only likely, and what nobody can know yet. No jargon, no guessing.
+The idea came from a real moment: my tokens sat pending for 15 minutes on the way from MiniPay to Binance, and I didn't know why.
 
-The idea came from a real moment: my tokens sat "pending" for 15 minutes on the way from MiniPay to Binance, and I had no idea why.
-
-Once ChainLens was built, I used it on a transfer like that. It showed me the transaction was already successful on the blockchain, so the delay was not on the blockchain. I had spent those minutes worrying about something that had already worked.
+When I used ChainLens on a transfer like that, it showed me the transaction was already successful on the blockchain. The problem was with Binance confirmations.
 
 ## What it does
 
