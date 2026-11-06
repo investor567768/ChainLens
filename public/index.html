@@ -4,10 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ChainLens</title>
+<script>try{var t=localStorage.getItem("chainlens.theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <style>
   :root{--bg:#f5f7f6;--card:#fff;--ink:#17211e;--mute:#62706b;--line:#dfe6e3;--accent:#2f7d6b;--accentsoft:#e5f1ed;--onaccent:#fff;--ok:#1a7f4b;--warn:#a85f00;--unk:#62706b;--bad:#b3261e;--note:#3a6fb0}
-  @media (prefers-color-scheme:dark){:root{--bg:#101614;--card:#18211e;--ink:#eaf1ee;--line:#27332f;--accent:#4aa58f;--accentsoft:#1c2e29;--onaccent:#07120f;--ok:#4cc38a;--warn:#e0a040;--unk:#9baba5;--bad:#f2b8b5;--note:#8bb6ea}}
-  @media (prefers-color-scheme:dark){:root{--mute:#9baba5}}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101614;--card:#18211e;--ink:#eaf1ee;--line:#27332f;--accent:#4aa58f;--accentsoft:#1c2e29;--onaccent:#07120f;--ok:#4cc38a;--warn:#e0a040;--unk:#9baba5;--bad:#f2b8b5;--note:#8bb6ea;--mute:#9baba5}}
+  :root[data-theme="dark"]{--bg:#101614;--card:#18211e;--ink:#eaf1ee;--line:#27332f;--accent:#4aa58f;--accentsoft:#1c2e29;--onaccent:#07120f;--ok:#4cc38a;--warn:#e0a040;--unk:#9baba5;--bad:#f2b8b5;--note:#8bb6ea;--mute:#9baba5}
+  :root[data-theme="light"]{color-scheme:light} :root[data-theme="dark"]{color-scheme:dark}
   *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
   a{color:var(--accent)}
   header.top{background:var(--card);border-bottom:1px solid var(--line)}
@@ -15,6 +17,7 @@
   .logo{width:34px;height:34px;border-radius:10px;background:var(--accentsoft);color:var(--accent);display:grid;place-items:center;font-weight:800}
   .pillogo{width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px}
   .pill{display:inline-flex;align-items:center}
+  .themebtn{margin-left:auto;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0} .themebtn:hover{background:var(--accentsoft)} .themebtn svg{width:18px;height:18px}
   .brandwrap{display:flex;flex-direction:column;line-height:1.15} .tagline{font-size:11px;color:var(--mute);font-weight:500;margin-top:1px}
   .brand{font-weight:700;font-size:18px} .pill{font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:var(--accentsoft);color:var(--mute);padding:3px 8px;border-radius:99px}
   nav.tabs{max-width:820px;margin:0 auto;padding:0 16px 12px;display:flex;justify-content:center}
@@ -43,7 +46,7 @@
   .confirmed,.success,.recorded,.paid{color:var(--ok)} .likely,.pending,.decision{color:var(--warn)} .unknown,.free,.offer,.unavailable{color:var(--unk)} .deepcheck{color:var(--note)} .failed{color:var(--bad)} .noted,.reused{color:var(--note)}
   .mute{color:var(--mute);font-size:14px} h2{font-size:16px;margin:0 0 4px} h3.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:18px 0 6px}
   .layer{color:var(--mute);font-size:13px;margin:0 0 8px}
-  :root{--up:#1a9e5c;--down:#d6453d} @media (prefers-color-scheme:dark){:root{--up:#3fbf7f;--down:#ef6a62}}
+  :root{--up:#1a9e5c;--down:#d6453d} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--up:#3fbf7f;--down:#ef6a62}} :root[data-theme="dark"]{--up:#3fbf7f;--down:#ef6a62}
   .pricebox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 14px;position:relative;overflow:hidden}
 .clogo{width:20px;height:20px;border-radius:5px;align-self:center} .candles{position:relative;display:flex;gap:5px;margin-top:12px} .candles .guide{position:absolute;left:0;right:0;height:0;border-top:1px solid var(--line);opacity:.6} .candles .cd{flex:1;position:relative;height:100%;z-index:1} .candles .cd i{position:absolute;display:block} .candles .wick{left:calc(50% - .75px);width:1.5px} .candles .body{left:18%;right:18%;border-radius:2px} .candles .up i{background:var(--up)} .candles .down i{background:var(--down)} .candles .nowline{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--mute);opacity:.7;z-index:2;pointer-events:none}
 .pricebox>*{position:relative} .pricebox .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap} .pricebox .big{font-size:22px;font-weight:700} .pricebox .up{color:var(--up);font-weight:600} .pricebox .down{color:var(--down);font-weight:600} .bars{display:flex;gap:5px;margin-top:12px;position:relative} .bars .col{flex:1;position:relative;height:100%} .bars i{position:absolute;left:18%;right:18%;border-radius:2px;display:block} .bars i.up{background:var(--up)} .bars i.down{background:var(--down)} .bars i.flat{background:var(--unk)}
@@ -94,7 +97,7 @@
 </head>
 <body>
 <header class="top">
-  <div class="bar"><div class="logo">C</div><div class="brandwrap"><div class="brand">ChainLens</div><div class="tagline">Your on-chain assistant</div></div><span class="pill"><img src="/celo-logo.png" alt="" class="pillogo" onerror="this.remove()">Celo</span></div>
+  <div class="bar"><div class="logo">C</div><div class="brandwrap"><div class="brand">ChainLens</div><div class="tagline">Your on-chain assistant</div></div><span class="pill"><img src="/celo-logo.png" alt="" class="pillogo" onerror="this.remove()">Celo</span><button class="themebtn" id="themeBtn" type="button" aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button></div>
   <nav class="tabs"><div class="seg" role="tablist">
     <button id="tab-chat" class="on"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span class="tl">Chat</span></button><button id="tab-perms"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="tl">Approvals</span></button><button id="tab-wallets"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.500-6.500 10-6.500S22 12 22 12s-3.500 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="tl">Watchlist</span><span id="alertBadge" class="badge" hidden style="margin-left:6px"></span></button><button id="tab-activity"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tl">Activity</span></button><button id="tab-payments"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.500"/><path d="M7 9.500v5M17 9.500v5"/></svg><span class="tl">Payments</span></button>
   </div></nav>
@@ -151,6 +154,22 @@
 const $ = (id) => document.getElementById(id);
 const link = (href, text) => { const a = document.createElement("a"); a.href = href; a.textContent = text; a.target = "_blank"; a.rel = "noopener noreferrer"; return a; };
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+// Light / dark toggle. Follows the device setting until the person picks one.
+(function () {
+  const btn = document.getElementById("themeBtn"); if (!btn) return;
+  const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  const current = () => document.documentElement.getAttribute("data-theme") || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const paint = () => { btn.innerHTML = current() === "dark" ? SUN : MOON; };
+  btn.addEventListener("click", () => {
+    const next = current() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("chainlens.theme", next); } catch {}
+    paint();
+  });
+  paint();
+})();
+
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
