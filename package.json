@@ -5,8 +5,11 @@
   "type": "module",
   "description": "ChainLens: plain-language Celo explainer (read-only).",
   "scripts": {
-    "start": "node server.js",
+    "start": "node tools/start.mjs",
     "test": "node --test test/investigate.test.js test/paid.test.js test/wallet.test.js test/headline.test.js test/packs.test.js test/wording.test.js test/v7.test.js test/price.test.js test/permissions.test.js test/users.test.js"
+  },
+  "dependencies": {
+    "@celo/buy": "0.8.3"
   },
   "engines": {
     "node": ">=18"
