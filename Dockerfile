@@ -8,5 +8,5 @@ COPY package.json ./
 RUN npm install --omit=dev
 COPY . .
 ENV HOST=0.0.0.0
-# Start a private session bus and an unlocked keychain, then ChainLens. If the keychain fails, the site still starts.
-CMD ["dbus-run-session", "--", "sh", "-c", "eval \"$(printf '' | gnome-keyring-daemon --daemonize --unlock --components=secrets 2>/dev/null)\"; echo \"[start] keychain: ${GNOME_KEYRING_CONTROL:-none}\"; exec node tools/start.mjs"]
+# Start a private session bus and an unlocked keychain, then ChainLens (see tools/keychain.sh).
+CMD ["dbus-run-session", "--", "sh", "tools/keychain.sh"]
