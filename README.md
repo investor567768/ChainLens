@@ -60,4 +60,4 @@ See `.env.example`. Main ones: `BUY_ACCOUNT`, `PAID_ENABLED=0` to switch paid ch
 
 - More Buy providers beyond Chainstack
 - Fee totals per watched wallet
-- Optional signed ownership check for ordering wallets
+- Verify that the wallet address a user enters really belongs to them
