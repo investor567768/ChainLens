@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ChainLens"><rect width="512" height="512" rx="112" fill="#2f7d6b"/>
+<circle cx="224" cy="224" r="128" fill="#1f5a4c" stroke="#fff" stroke-width="44"/>
+<line x1="322" y1="322" x2="414" y2="414" stroke="#fff" stroke-width="52" stroke-linecap="round"/>
+<g fill="none" stroke="#e5f1ed" stroke-width="26"><rect x="150" y="190" width="104" height="68" rx="34"/><rect x="194" y="190" width="104" height="68" rx="34"/></g></svg>

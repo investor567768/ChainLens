@@ -58,3 +58,28 @@ test("payments page: successful Deep Investigations only, with who ordered them"
   assert.equal(s.totals.ordered, 2); assert.equal(s.totals.usersWhoOrdered, 2); assert.equal(s.totals.totalPaid, 0.02);
   assert.equal(s.calls.length, 2); assert.equal(s.calls[1].orderer, O);
 });
+
+import { summarizePayments as _sp } from "../lib/payments.js";
+test("the paying agent wallet is never counted as an independent user", () => {
+  const agent = "0x398f4abf39c59ddb3022be755dc0f5a4c57b118e";
+  const rows = [
+    { kind: "paid-call", status: "ok", orderer: agent, amount: 0.01, currency: "USDT", paymentTxHash: "0x" + "a".repeat(64), at: "2026-11-06T10:00:00Z" },
+    { kind: "paid-call", status: "ok", orderer: "0x" + "1".repeat(40), amount: 0.01, currency: "USDT", paymentTxHash: "0x" + "b".repeat(64), at: "2026-11-07T10:00:00Z" },
+  ];
+  assert.equal(_sp(rows, []).totals.usersWhoOrdered, 1);
+});
+
+import { proofMarkdown as _pm } from "../lib/proof.js";
+test("proof.md builds, labels builder tests and lists the totals", () => {
+  const agent = "0x398f4abf39c59ddb3022be755dc0f5a4c57b118e";
+  const rows = [
+    { kind: "paid-call", status: "ok", orderer: agent, tx: "0x" + "c".repeat(64), amount: 0.01, currency: "USDT", paymentTxHash: "0x" + "a".repeat(64), at: "2026-11-06T10:00:00Z" },
+    { kind: "paid-call", status: "ok", orderer: "0x" + "1".repeat(40), tx: "0x" + "d".repeat(64), amount: 0.01, currency: "USDT", paymentTxHash: "0x" + "b".repeat(64), at: "2026-11-07T10:00:00Z" },
+  ];
+  const s = _sp(rows, []);
+  assert.equal(s.totals.builderTests, 1);
+  assert.equal(s.totals.fromOthers, 1);
+  const md = _pm(s, agent, "Chainstack");
+  assert.match(md, /builder test/);
+  assert.match(md, /From other people: 1/);
+});

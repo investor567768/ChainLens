@@ -1,6 +1,6 @@
 {
   "name": "chainlens",
-  "version": "0.8.7",
+  "version": "0.10.0",
   "private": true,
   "type": "module",
   "description": "ChainLens: plain-language Celo explainer (read-only).",

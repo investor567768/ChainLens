@@ -15,6 +15,7 @@ import { parseAsk } from "./lib/ask.js";
 import { getHoldings } from "./lib/holdings.js";
 import { logEvent, readEvents, describeFree, describePaid } from "./lib/activity.js";
 import { summarizePayments } from "./lib/payments.js";
+import { proofMarkdown } from "./lib/proof.js";
 import { answerFollowUp, FOLLOW_UPS } from "./lib/followups.js";
 import { explainChanges } from "./lib/changes.js";
 
@@ -41,10 +42,12 @@ function remember(id, ctx) {
 
 // A random per-browser ID, so the proof page can show how many different people used the app.
 const lookedAt = new Map();
+const AGENT_WALLET = (process.env.CHAINLENS_AGENT_ADDRESS || "0x398f4AbF39c59DDb3022BE755DC0f5A4C57b118e").toLowerCase();
 const ordererOf = (url) => { const v = (url.searchParams.get("orderer") || "").trim().toLowerCase(); return /^0x[0-9a-f]{40}$/.test(v) ? v : null; };
 async function orderGate(url) {
   const o = ordererOf(url);
   if (!o) return { status: 400, body: { ok: false, needOrderer: true, error: "Enter your wallet address to order a Deep Investigation." } };
+  if (o === AGENT_WALLET) return { status: 400, body: { ok: false, needOrderer: true, error: "That is ChainLens's own paying wallet. Enter your own wallet address to order a Deep Investigation." } };
   if ((await orderedToday(o)) >= ORDER_CAP) return { status: 429, body: { ok: false, error: `You have used your ${ORDER_CAP} Deep Investigations for today. Try again tomorrow.` } };
   return { orderer: o };
 }
@@ -142,13 +145,16 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/api/payments") {
       return send(res, 200, { ok: true, ...summarizePayments(await readAll(), await readEvents(1000)) });
     }
+    if (url.pathname === "/proof.md") {
+      return send(res, 200, proofMarkdown(summarizePayments(await readAll(), await readEvents(1000)), AGENT_WALLET, providerName()), "text/markdown; charset=utf-8");
+    }
     if (url.pathname === "/api/ledger") {
       return send(res, 200, { ok: true, rows: (await readAll()).slice(-50).reverse() });
     }
     if (url.pathname === "/" || url.pathname === "/index.html") {
       return send(res, 200, (await readFile(path.join(here, "public", "index.html"), "utf8")).replaceAll("__PROVIDER__", providerName()), "text/html; charset=utf-8");
     }
-    const LOGOS = { "/celo-logo.svg": "image/svg+xml", "/celo-logo.png": "image/png" };
+    const LOGOS = { "/celo-logo.svg": "image/svg+xml", "/celo-logo.png": "image/png", "/logo.svg": "image/svg+xml", "/logo.png": "image/png" };
     if (LOGOS[url.pathname]) {
       try { return send(res, 200, await readFile(path.join(here, "public", url.pathname.slice(1))), LOGOS[url.pathname]); } catch { return send(res, 404, { ok: false, error: "Not found" }); }
     }

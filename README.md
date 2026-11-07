@@ -25,6 +25,7 @@ Bonus: Watchlist with free alerts while the page is open, CELO price chart, and 
 
 - **Chainstack**, paid through **Buy** (x402). Paid by the agent wallet `0x398f4AbF39c59DDb3022BE755DC0f5A4C57b118e` (ERC-8004 agent #10027).
 - Every successful paid call appears on the **Payments** page in the app, with a Celoscan link to the payment transaction.
+- A plain-text summary of the same proof is at `/proof.md` on the live app. It is built from the live payment records.
 - Free sources: Blockscout, SQD, a public Celo RPC, Binance public price data.
 - No AI model is used. Fixed rules read the question.
 
@@ -61,3 +62,4 @@ See `.env.example`. Main ones: `BUY_ACCOUNT`, `PAID_ENABLED=0` to switch paid ch
 - More Buy providers beyond Chainstack
 - Fee totals per watched wallet
 - Verify that the wallet address a user enters really belongs to them
+- ChainLens on Telegram, so people can ask it in a chat
