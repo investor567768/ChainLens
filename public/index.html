@@ -38,6 +38,9 @@
   .spread{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:10px}
   .price{color:var(--mute);font-size:14px;flex:1 1 220px}
   .deepbox{border:1px dashed var(--line);border-radius:14px;padding:10px 12px;margin-top:12px}
+  .hero .notai{font-size:15px;font-weight:600;margin:-6px auto 14px;max-width:520px;color:var(--ink)} .hero .notai em{font-style:normal;font-weight:600}
+  .eyebrow{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--accentsoft);padding:5px 10px;border-radius:999px;margin-bottom:10px}
+  .proofstrip{display:block;text-align:center;margin:10px auto 0;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;max-width:520px}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center}
   .chip{background:var(--card);border:1px solid var(--line);color:var(--ink);font-weight:500;font-size:14px;padding:7px 12px}
   .understood{margin:14px 2px 0;color:var(--mute);font-size:14px}
@@ -102,26 +105,29 @@
 <header class="top">
   <div class="bar"><a href="/" id="homeLink" class="home" aria-label="ChainLens home"><span class="logo"><img src="/logo.svg" alt="ChainLens" class="logoimg"></span><span class="brandwrap"><span class="brand">ChainLens</span><span class="tagline">Your on-chain assistant</span></span></a><button class="themebtn" id="themeBtn" type="button" aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button></div>
   <nav class="tabs"><div class="seg" role="tablist">
-    <button id="tab-chat" class="on"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span class="tl">Chat</span></button><button id="tab-perms"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="tl">Approvals</span></button><button id="tab-wallets"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.500-6.500 10-6.500S22 12 22 12s-3.500 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="tl">Watchlist</span><span id="alertBadge" class="badge" hidden style="margin-left:6px"></span></button><button id="tab-activity"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tl">Activity</span></button><button id="tab-payments"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.500"/><path d="M7 9.500v5M17 9.500v5"/></svg><span class="tl">Payments</span></button>
+    <button id="tab-chat" class="on"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span class="tl">Explain</span></button><button id="tab-perms"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span class="tl">Approvals</span></button><button id="tab-wallets"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.500-6.500 10-6.500S22 12 22 12s-3.500 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="tl">Watchlist</span><span id="alertBadge" class="badge" hidden style="margin-left:6px"></span></button><button id="tab-activity"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tl">Activity</span></button><button id="tab-payments"><svg class="ti" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.500"/><path d="M7 9.500v5M17 9.500v5"/></svg><span class="tl">Payments</span></button>
   </div></nav>
 </header>
 <main>
   <section id="chat">
     <div class="hero" id="hero">
+      <div class="eyebrow">An agent on Celo that pays for its own data</div>
       <h1>Understand your on-chain activity</h1>
       <p>Investigate transactions, understand wallet activity, and discover what deserves your attention.</p>
+      <p class="notai">Not an AI guessing.</p>
     </div>
     <form id="askf" class="askcard">
-      <label class="q" for="q">Ask about a transaction or wallet</label>
-      <textarea id="q" rows="2" placeholder="e.g. Why did this fail? 0x... (or paste a wallet address)" autocomplete="off" spellcheck="false"></textarea>
+      <label class="q" for="q">Transaction hash or wallet address</label>
+      <textarea id="q" rows="2" placeholder="0x…" autocomplete="off" spellcheck="false"></textarea>
       <div class="deepbox">
         <label><input type="checkbox" id="deep"> <strong>Deep Investigation</strong> (optional)</label>
-        <div class="mute">Gets additional information from __PROVIDER__, through Buy.</div>
+        <div class="mute">Our agent buys extra data from __PROVIDER__ with its own wallet, through Buy. 0.01 USDT, paid by ChainLens, with a public receipt.</div>
         <div id="pickerSlot" style="margin-top:8px"></div>
       </div>
-      <div class="spread"><span class="price">A Deep Investigation only starts when you ask for it. ChainLens pays for it.</span><button type="submit">Investigate</button></div>
+      <div class="spread"><span class="price"></span><button type="submit">Investigate</button></div>
     </form>
     <p class="fine">Read-only. No wallet connection. No keys.</p>
+    <a class="proofstrip" id="proofstrip" href="#payments" hidden>Our agent has paid for <strong id="paidN">0</strong> Deep <span id="paidW">Investigations</span> on Celo · See the receipts →</a>
     <div class="chips" id="chips"></div>
     <p class="understood" id="understood" hidden></p>
     <div id="out"></div>
@@ -221,6 +227,8 @@ function show(which, keepScroll) {
   if (which === "payments") renderPayments();
 }
 for (const t of TABS) $("tab-" + t).onclick = () => show(t);
+$("proofstrip").onclick = (e) => { e.preventDefault(); show("payments"); };
+fetch("/api/payments").then((r) => r.json()).then((j) => { const n = j && j.totals && j.totals.paidCalls; if (n > 0) { $("paidN").textContent = n; $("paidW").textContent = n === 1 ? "Investigation" : "Investigations"; $("proofstrip").hidden = false; } }).catch(() => {});
 $("homeLink").onclick = (e) => { e.preventDefault(); show("chat"); };
 
 // ---- reason picker (optional everywhere)
@@ -242,7 +250,7 @@ $("pickerSlot").append(topPicker.wrap);
 // ---- chat: ask bar
 const out = $("out");
 const understood = (msg) => { $("understood").textContent = msg || ""; $("understood").hidden = !msg; };
-const CHIPS = [["Who can spend my tokens?", "__perms__"], ["Explain a transaction", "Explain this transaction: "], ["Why did it fail?", "Why did this fail? "], ["Why is it stuck?", "Why is my transaction stuck? "], ["What is in a wallet?", "What is in this wallet? "]];
+const CHIPS = [["Check token approvals", "__perms__"], ["Explain a transaction", ""], ["Failed transaction", "Failed transaction: "], ["Pending transaction", "Pending transaction: "], ["Look up a wallet", ""]];
 for (const [label, prefix] of CHIPS) { const b = el("button", "chip", label); b.type = "button"; b.onclick = () => { if (prefix === "__perms__") { show("perms"); $("pa").focus(); return; } $("q").value = prefix; $("q").focus(); }; $("chips").append(b); }
 $("q").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("askf").requestSubmit(); } });
 $("askf").addEventListener("submit", async (ev) => {
@@ -692,7 +700,7 @@ async function renderPayments() {
     box.replaceChildren();
     const T = d.totals;
     const tiles = el("div", "tiles");
-    for (const [n, label] of [[T.fromOthers, "ordered by other people"], [T.usersWhoOrdered, "people who ordered"], [T.builderTests, "builder tests"], [T.totalPaid + " " + T.currency, "paid by ChainLens"]]) {
+    for (const [n, label] of [[T.fromOthers, "Deep Investigations ordered by others"], [T.usersWhoOrdered, "Independent users (different wallets)"], [T.builderTests, "Builder tests"], [T.totalPaid + " " + T.currency, "Total paid by ChainLens"]]) {
       const t = el("div", "tile"); t.append(el("b", null, String(n))); t.append(el("span", null, label)); tiles.append(t);
     }
     box.append(tiles);

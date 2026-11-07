@@ -2,6 +2,8 @@
 
 **Understand your on-chain activity.** ChainLens explains Celo transactions and wallets in plain language. It is read-only: no wallet connection, no keys, and users pay nothing.
 
+**Live app:** https://chainlens.site
+
 Built for the Celo x Loops House "Agents on Open Rails" hackathon, track **Build with Buy**.
 
 ## Where ChainLens began
@@ -25,7 +27,7 @@ Bonus: Watchlist with free alerts while the page is open, CELO price chart, and 
 
 - **Chainstack**, paid through **Buy** (x402). Paid by the agent wallet `0x398f4AbF39c59DDb3022BE755DC0f5A4C57b118e` (ERC-8004 agent #10027).
 - Every successful paid call appears on the **Payments** page in the app, with a Celoscan link to the payment transaction.
-- A plain-text summary of the same proof is at `/proof.md` on the live app. It is built from the live payment records.
+- A plain-text summary of the same proof is at https://chainlens.site/proof.md It is built from the live payment records.
 - Free sources: Blockscout, SQD, a public Celo RPC, Binance public price data.
 - No AI model is used. Fixed rules read the question.
 

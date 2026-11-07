@@ -5,6 +5,7 @@ import { checkPermissions } from "./lib/permissions.js";
 import { getPaidPermissions, orderedToday, ORDER_CAP } from "./lib/paid.js";
 import { newInvestigationId } from "./lib/evidence.js";
 import http from "node:http";
+import { gzipSync } from "node:zlib";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -53,9 +54,13 @@ async function orderGate(url) {
 }
 const sidOf = (url) => { const v = (url.searchParams.get("sid") || "").trim(); return /^u_[a-z0-9]{6,16}$/.test(v) ? v : null; };
 
-const send = (res, code, body, type = "application/json") => {
-  res.writeHead(code, { "content-type": type, "cache-control": "no-store", "x-content-type-options": "nosniff" });
-  res.end(type === "application/json" ? JSON.stringify(body) : body);
+const send = (res, code, body, type = "application/json", cache = "no-store") => {
+  let out = type === "application/json" ? JSON.stringify(body) : body;
+  const headers = { "content-type": type, "cache-control": cache, "x-content-type-options": "nosniff", vary: "Accept-Encoding" };
+  const wantsGzip = String((res.req && res.req.headers["accept-encoding"]) || "").includes("gzip");
+  if (wantsGzip && /^(application\/json|text\/|image\/svg)/.test(type) && Buffer.byteLength(out) > 1024) { out = gzipSync(out); headers["content-encoding"] = "gzip"; }
+  res.writeHead(code, headers);
+  res.end(out);
 };
 
 const server = http.createServer(async (req, res) => {
@@ -156,7 +161,7 @@ const server = http.createServer(async (req, res) => {
     }
     const LOGOS = { "/celo-logo.svg": "image/svg+xml", "/celo-logo.png": "image/png", "/logo.svg": "image/svg+xml", "/logo.png": "image/png" };
     if (LOGOS[url.pathname]) {
-      try { return send(res, 200, await readFile(path.join(here, "public", url.pathname.slice(1))), LOGOS[url.pathname]); } catch { return send(res, 404, { ok: false, error: "Not found" }); }
+      try { return send(res, 200, await readFile(path.join(here, "public", url.pathname.slice(1))), LOGOS[url.pathname], "public, max-age=86400"); } catch { return send(res, 404, { ok: false, error: "Not found" }); }
     }
     send(res, 404, { ok: false, error: "Not found" });
   } catch (err) {
