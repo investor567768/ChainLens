@@ -41,6 +41,7 @@
   .hero .notai{font-size:15px;font-weight:600;margin:-6px auto 14px;max-width:520px;color:var(--ink)} .hero .notai em{font-style:normal;font-weight:600}
   .eyebrow{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--accentsoft);padding:5px 10px;border-radius:999px;margin-bottom:10px}
   .proofstrip{display:block;text-align:center;margin:10px auto 0;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;max-width:520px}
+  .limits{margin:4px 2px 14px;font-size:14px} .limits p{margin:8px 0 0} .limits summary{cursor:pointer;color:var(--accent);font-size:14px} .limits ul{margin-top:8px}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;justify-content:center}
   .chip{background:var(--card);border:1px solid var(--line);color:var(--ink);font-weight:500;font-size:14px;padding:7px 12px}
   .understood{margin:14px 2px 0;color:var(--mute);font-size:14px}
@@ -137,7 +138,7 @@
     <h1 style="font-size:22px;margin:4px 0 6px">Who can spend your tokens?</h1>
     <p class="intro">Paste a Celo wallet address. ChainLens lists the contracts that were given approval to spend your tokens, in plain words. Read-only: nothing is connected and nothing can be moved or cancelled here.</p>
     <form id="pf" class="row"><input type="text" id="pa" placeholder="0x... wallet address" autocomplete="off" spellcheck="false" style="flex:1 1 260px;width:auto"><button>Check</button></form>
-    <p class="price" style="margin:8px 0">The basic investigation is free. A Deep Investigation (Chainstack, through Buy) only starts when you ask for it. ChainLens pays for it.</p>
+    <p class="price" style="margin:8px 0">The basic investigation is free. A Deep Investigation only starts when you ask for it.</p>
     <div id="pout2"></div>
   </section>
 
@@ -611,7 +612,7 @@ async function runPerms(address) {
     }
     box.append(c);
     const pay = el("div", "card"); pay.append(el("h2", null, "Deep Investigation"));
-    pay.append(el("p", "mute", "The list above comes from the explorer and the public Celo node. A Deep Investigation asks a separate node (__PROVIDER__, paid by ChainLens through Buy) what is still active right now, and how much of your tokens each approval could actually move. ChainLens pays for it. It starts only when you press the button."));
+    pay.append(el("p", "mute", "A Deep Investigation asks a separate node (__PROVIDER__, paid by ChainLens through Buy) what is still active right now, and how much of your tokens each approval could actually move."));
     const btn = el("button", null, "Run Deep Investigation"); const res = el("div");
     btn.onclick = async () => {
       if (!(await getOrderer())) return;
@@ -630,8 +631,10 @@ async function runPerms(address) {
     };
     pay.append(btn, res); box.append(pay);
   }
-  const n = el("div", "card"); n.append(el("h2", null, "What this cannot show"));
-  const ul = el("ul", "plain mute"); for (const t of [...d.notes, ...d.limits]) ul.append(el("li", null, t)); n.append(ul); box.append(n);
+  const n = el("div", "limits");
+  const det = el("details"); det.append(el("summary", null, "Limits of this check"));
+  det.append(el("p", "mute", "Covers approvals sent from this wallet. Signature-based permissions aren't visible on-chain. ChainLens is read-only; to cancel an approval, use revoke.cash."));
+  n.append(det); box.append(n);
 }
 $("pf").addEventListener("submit", (e) => { e.preventDefault(); const a = $("pa").value.trim(); if (a) runPerms(a); });
 
