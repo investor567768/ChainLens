@@ -281,7 +281,7 @@ $("askf").addEventListener("submit", async (ev) => {
     understood(r.understood);
     if (r.kind === "tx") { $("hero").hidden = true; investigate(r.hash, { deep: r.deep || $("deep").checked, purpose: r.purpose || undefined, keepMessage: true }); }
     else if (r.kind === "permissions") { runPerms(r.address); out.replaceChildren(); }
-    else if (r.kind === "wallet") { $("hero").hidden = true; out.replaceChildren(buildWallet({ address: r.address, label: "" }, false).node); }
+    else if (r.kind === "wallet") { $("hero").hidden = true; out.replaceChildren(buildWallet({ address: r.address, label: "" }, false).node); toView(out); }
     else out.replaceChildren();
   } catch { out.replaceChildren(el("p", "mute", "Could not reach the app. Is it running?")); }
 });
